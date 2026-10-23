@@ -12,140 +12,140 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 public class Lluvia {
 	 
-    private static final float SCREEN_WIDTH = 800f;
-    private static final float SCREEN_HEIGHT = 480f;
-    private static final float DROP_SIZE = 64f;
+    private static final float ANCHO_PANTALLA = 800f;
+    private static final float ALTO_PANTALLA = 480f;
+    private static final float TAMANO_GOTA = 64f;
  
-    private Array<FallingObject> drops;
-    private float spawnTimer;
-    private float spawnInterval;
+    private Array<CaidaObject> gotas;
+    private float temporizadorAparicion;
+    private float intervaloAparicion;
  
-    private LevelConfig currentConfig;
-    private GameManager lastManager;
+    private LevelConfig configActual;
+    private GameManager ultimoGestor;
  
-    private Texture waterTexture;
-    private Texture toxicTexture;
-    private Texture shieldTexture;
-    private Texture goldenTexture;
-    private Texture blackTexture;
+    private Texture texturaAgua;
+    private Texture texturaToxica;
+    private Texture texturaEscudo;
+    private Texture texturaDorada;
+    private Texture texturaNegra;
  
-    private Sound dropSound;
-    private Music rainMusic;
+    private Sound sonidoGota;
+    private Music musicaLluvia;
  
     /**
      * Las texturas drop.png y dropBad.png son las originales del proyecto.
-     * Las otras tres deben agregarse a assets/ (puedes copiar drop.png y teñirla).
+     * Las otras tres (dropShield, dropGolden, dropBlack) estan en assets/.
      */
-    public Lluvia(Sound dropSound, Music rainMusic) {
-        this.dropSound = dropSound;
-        this.rainMusic = rainMusic;
+    public Lluvia(Sound sonidoGota, Music musicaLluvia) {
+        this.sonidoGota = sonidoGota;
+        this.musicaLluvia = musicaLluvia;
  
-        drops = new Array<FallingObject>();
-        spawnTimer = 0f;
-        spawnInterval = 1f;
+        gotas = new Array<CaidaObject>();
+        temporizadorAparicion = 0f;
+        intervaloAparicion = 1f;
  
-        waterTexture = new Texture("drop.png");
-        toxicTexture = new Texture("dropBad.png");
-        shieldTexture = new Texture("dropShield.png");
-        goldenTexture = new Texture("dropGolden.png");
-        blackTexture = new Texture("dropBlack.png");
+        texturaAgua = new Texture("drop.png");
+        texturaToxica = new Texture("dropBad.png");
+        texturaEscudo = new Texture("dropShield.png");
+        texturaDorada = new Texture("dropGolden.png");
+        texturaNegra = new Texture("dropBlack.png");
     }
  
     /** Inicia la musica de fondo (llamar en show() de GameScreen). */
     public void startMusic() {
-        rainMusic.setLooping(true);
-        rainMusic.play();
+        musicaLluvia.setLooping(true);
+        musicaLluvia.play();
     }
  
     public void stopMusic() {
-        rainMusic.stop();
+        musicaLluvia.stop();
     }
  
     /** GameScreen la llama cuando cambia de nivel (con LevelManager.getCurrentConfig()). */
     public void setLevelConfig(LevelConfig config) {
-        this.currentConfig = config;
-        this.spawnInterval = config.getSpawnInterval();
+        this.configActual = config;
+        this.intervaloAparicion = config.getSpawnInterval();
     }
  
-    public void update(float delta, Tarro tarro, GameManager manager) {
-        this.lastManager = manager;
-        if (currentConfig == null) return;
+    public void update(float delta, Tarro tarro, GameManager gestor) {
+        this.ultimoGestor = gestor;
+        if (configActual == null) return;
  
         // Generacion
-        spawnTimer += delta;
-        if (spawnTimer >= spawnInterval) {
-            spawnTimer = 0f;
-            spawnDrop(currentConfig);
+        temporizadorAparicion += delta;
+        if (temporizadorAparicion >= intervaloAparicion) {
+            temporizadorAparicion = 0f;
+            spawnDrop(configActual);
         }
  
         // Actualizacion y colisiones (recorrido inverso para poder eliminar)
-        for (int i = drops.size - 1; i >= 0; i--) {
-            FallingObject drop = drops.get(i);
-            drop.update(delta);
+        for (int i = gotas.size - 1; i >= 0; i--) {
+        	CaidaObject gota = gotas.get(i);
+            gota.update(delta);
  
-            if (drop.isActive() && drop.getBounds().overlaps(tarro.getBounds())) {
-                ((DropEffect) drop).applyEffect(tarro, manager);
-                if (drop instanceof WaterDrop || drop instanceof GoldenDrop) {
-                    dropSound.play();
+            if (gota.isActive() && gota.getBounds().overlaps(tarro.getBounds())) {
+                ((EfectoCaida) gota).applyEffect(tarro, gestor);
+                if (gota instanceof WaterDrop || gota instanceof GoldenDrop) {
+                    sonidoGota.play();
                 }
-                drop.deactivate();
+                gota.deactivate();
             }
  
-            if (!drop.isActive()) {
-                drops.removeIndex(i);
+            if (!gota.isActive()) {
+                gotas.removeIndex(i);
             }
         }
     }
  
     public void spawnDrop(LevelConfig config) {
-        float x = MathUtils.random(0f, SCREEN_WIDTH - DROP_SIZE);
-        float y = SCREEN_HEIGHT;
-        float speed = config.getDropSpeed();
+        float x = MathUtils.random(0f, ANCHO_PANTALLA - TAMANO_GOTA);
+        float y = ALTO_PANTALLA;
+        float velocidad = config.getDropSpeed();
  
-        float roll = MathUtils.random(100f);
-        FallingObject drop;
+        float dado = MathUtils.random(100f);
+        CaidaObject gota;
  
-        if (roll < 50f) {
-            drop = new WaterDrop(x, y, speed, waterTexture);
-        } else if (roll < 75f) {
-            drop = new ToxicDrop(x, y, speed, toxicTexture);
-        } else if (roll < 83f) {
-            drop = new ShieldDrop(x, y, speed, shieldTexture);
-        } else if (roll < 91f) {
-            drop = new BlackDrop(x, y, speed, blackTexture);
-        } else if (lastManager != null && lastManager.canSpawnGoldenDrop()) {
-            drop = new GoldenDrop(x, y, speed, goldenTexture);
+        if (dado < 50f) {
+            gota = new CaidaAgua(x, y, velocidad, texturaAgua);
+        } else if (dado < 75f) {
+            gota = new CaidaAguaToxica(x, y, velocidad, texturaToxica);
+        } else if (dado < 83f) {
+            gota = new CaidaEscudo(x, y, velocidad, texturaEscudo);
+        } else if (dado < 91f) {
+            gota = new CaidaAguaNegra(x, y, velocidad, texturaNegra);
+        } else if (ultimoGestor != null && ultimoGestor.canSpawnGoldenDrop()) {
+            gota = new CaidaGotaDorada(x, y, velocidad, texturaDorada);
         } else {
-            drop = new WaterDrop(x, y, speed, waterTexture);
+            gota = new CaidaAgua(x, y, velocidad, texturaAgua);
         }
  
-        drops.add(drop);
+        gotas.add(gota);
     }
  
     public void render(SpriteBatch batch) {
-        for (FallingObject drop : drops) {
-            drop.draw(batch);
+        for (CaidaObject gota : gotas) {
+            gota.draw(batch);
         }
     }
  
     /** Elimina todas las gotas (util al reiniciar la partida). */
     public void clear() {
-        for (FallingObject drop : drops) {
-            drop.dispose();
+        for (CaidaObject gota : gotas) {
+            gota.dispose();
         }
-        drops.clear();
-        spawnTimer = 0f;
+        gotas.clear();
+        temporizadorAparicion = 0f;
     }
  
     public void dispose() {
         clear();
-        waterTexture.dispose();
-        toxicTexture.dispose();
-        shieldTexture.dispose();
-        goldenTexture.dispose();
-        blackTexture.dispose();
-        dropSound.dispose();
-        rainMusic.dispose();
+        texturaAgua.dispose();
+        texturaToxica.dispose();
+        texturaEscudo.dispose();
+        texturaDorada.dispose();
+        texturaNegra.dispose();
+        sonidoGota.dispose();
+        musicaLluvia.dispose();
     }
 }
  
