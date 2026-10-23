@@ -10,6 +10,6 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(60);
 		config.setTitle("ProyectoGM_Grupo3");
-		new Lwjgl3Application(new GameLluvia(), config);
+		new Lwjgl3Application(new GameLluviaMenu(), config);
 	}
 }
