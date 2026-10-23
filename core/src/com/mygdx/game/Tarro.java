@@ -11,125 +11,120 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class Tarro {
 	 
-    private static final float SCREEN_WIDTH = 800f;
-    private static final float BASE_SPEED = 400f;
-    private static final float SLOW_FACTOR = 0.4f;
-    private static final int INITIAL_LIVES = 3;
-    private static final int HURT_FRAMES = 50;
+    private static final float ANCHO_PANTALLA = 800f;
+    private static final float VELOCIDAD_BASE = 400f;
+    private static final float FACTOR_LENTITUD = 0.4f;
+    private static final int VIDAS_INICIALES = 3;
+    private static final int FRAMES_HERIDO = 50;
  
-    private Rectangle bounds;
-    private int lives;
-    private float moveSpeed;
-    private boolean shieldActive;
-    private float slowTimer;
-    private ControlStrategy controlStrategy;
-    private Texture texture;
-    private Sound hurtSound;
+    private Rectangle area;
+    private int vidas;
+    private float velocidadMovimiento;
+    private boolean escudoActivo;
+    private float temporizadorLentitud;
+    private EstrategiaControles estrategiaControl;
+    private Texture textura;
+    private Sound sonidoHerido;
  
     // animacion de herido (igual que en la version original)
-    private boolean hurt;
-    private int hurtTimer;
+    private boolean herido;
+    private int temporizadorHerido;
  
-    public Tarro(Texture texture, ControlStrategy controlStrategy, Sound hurtSound) {
-        this.texture = texture;
-        this.controlStrategy = controlStrategy;
-        this.hurtSound = hurtSound;
-        this.bounds = new Rectangle(SCREEN_WIDTH / 2f - 32f, 20f, 64f, 64f);
-        this.lives = INITIAL_LIVES;
-        this.moveSpeed = BASE_SPEED;
-        this.shieldActive = false;
-        this.slowTimer = 0f;
-        this.hurt = false;
+    public Tarro(Texture textura, EstrategiaControles estrategiaControl, Sound sonidoHerido) {
+        this.textura = textura;
+        this.estrategiaControl = estrategiaControl;
+        this.sonidoHerido = sonidoHerido;
+        this.area = new Rectangle(ANCHO_PANTALLA / 2f - 32f, 20f, 64f, 64f);
+        this.vidas = VIDAS_INICIALES;
+        this.velocidadMovimiento = VELOCIDAD_BASE;
+        this.escudoActivo = false;
+        this.temporizadorLentitud = 0f;
+        this.herido = false;
     }
  
     /** Actualiza movimiento y temporizadores. */
     public void updateMovement(float delta) {
-        float speed = moveSpeed;
-        if (slowTimer > 0f) {
-            speed *= SLOW_FACTOR;
-            slowTimer -= delta;
-            if (slowTimer < 0f) slowTimer = 0f;
+        float velocidad = velocidadMovimiento;
+        if (temporizadorLentitud > 0f) {
+            velocidad *= FACTOR_LENTITUD;
+            temporizadorLentitud -= delta;
+            if (temporizadorLentitud < 0f) temporizadorLentitud = 0f;
         }
  
-        controlStrategy.move(bounds, speed, delta);
+        estrategiaControl.movimiento(area, velocidad, delta);
  
         // Mantener el balde dentro de la pantalla
-        if (bounds.x < 0) bounds.x = 0;
-        if (bounds.x > SCREEN_WIDTH - bounds.width) bounds.x = SCREEN_WIDTH - bounds.width;
+        if (area.x < 0) area.x = 0;
+        if (area.x > ANCHO_PANTALLA - area.width) area.x = ANCHO_PANTALLA - area.width;
     }
  
     /** Cambia la estrategia de control en caliente (usado desde PauseMenu). */
-    public void setControlStrategy(ControlStrategy strategy) {
-        this.controlStrategy = strategy;
+    public void setControlStrategy(EstrategiaControles estrategia) {
+        this.estrategiaControl = estrategia;
     }
  
     /** Recibe dano: si hay escudo lo consume, si no pierde una vida. */
     public void receiveDamage() {
-        if (shieldActive) {
-            shieldActive = false;
+        if (escudoActivo) {
+            escudoActivo = false;
             return;
         }
-        if (lives > 0) lives--;
-        hurt = true;
-        hurtTimer = HURT_FRAMES;
-        hurtSound.play();
+        if (vidas > 0) vidas--;
+        herido = true;
+        temporizadorHerido = FRAMES_HERIDO;
+        sonidoHerido.play();
     }
  
     public void activateShield() {
-        shieldActive = true;
+        escudoActivo = true;
     }
  
-    public void applySlow(float duration) {
-        slowTimer = duration;
+    public void applySlow(float duracion) {
+        temporizadorLentitud = duracion;
     }
  
     public Rectangle getBounds() {
-        return bounds;
+        return area;
     }
  
     public boolean hasShield() {
-        return shieldActive;
+        return escudoActivo;
     }
  
     public int getLives() {
-        return lives;
+        return vidas;
     }
  
     public boolean isGameOver() {
-        return lives <= 0;
+        return vidas <= 0;
     }
  
     /** True mientras dura la animacion de herido. */
     public boolean isHurt() {
-        return hurt;
+        return herido;
     }
  
-    /** Dibuja el balde (tinte si esta ralentizado o con escudo, y temblor si esta herido). */
+    /** Dibuja el balde (tinte si esta lento o con escudo, y temblor si esta herido). */
     public void draw(SpriteBatch batch) {
-        if (slowTimer > 0f) {
+        if (temporizadorLentitud > 0f) {
             batch.setColor(0.5f, 0.5f, 0.5f, 1f);
-        } else if (shieldActive) {
+        } else if (escudoActivo) {
             batch.setColor(0.4f, 0.8f, 1f, 1f);
         }
  
-        float y = bounds.y;
-        if (hurt) {
+        float y = area.y;
+        if (herido) {
             y += MathUtils.random(-5, 5);
-            hurtTimer--;
-            if (hurtTimer <= 0) hurt = false;
+            temporizadorHerido--;
+            if (temporizadorHerido <= 0) herido = false;
         }
-        batch.draw(texture, bounds.x, y, bounds.width, bounds.height);
+        batch.draw(textura, area.x, y, area.width, area.height);
         batch.setColor(1f, 1f, 1f, 1f);
     }
  
     public void dispose() {
-        texture.dispose();
-        hurtSound.dispose();
+        textura.dispose();
+        sonidoHerido.dispose();
     }
-
-	public void activateShield() {
-		// TODO Auto-generated method stub
-		
-	}
 }
  
