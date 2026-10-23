@@ -85,7 +85,7 @@ public class Lluvia {
  
             if (gota.isActive() && gota.getBounds().overlaps(tarro.getBounds())) {
                 ((EfectoCaida) gota).applyEffect(tarro, gestor);
-                if (gota instanceof WaterDrop || gota instanceof GoldenDrop) {
+                if (gota instanceof CaidaAgua || gota instanceof CaidaGotaDorada) {
                     sonidoGota.play();
                 }
                 gota.deactivate();
