@@ -3,9 +3,13 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+<<<<<<< HEAD
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+=======
+import com.badlogic.gdx.graphics.OrthographicCamera;
+>>>>>>> origin/main
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -14,9 +18,13 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 public class PausaScreen implements Screen {
 
+<<<<<<< HEAD
 	private static final String RUTA_FONDO = "fondos/pausa.png";
 	 
     private final GameLluviaMenu game;
+=======
+	private final GameLluviaMenu game;
+>>>>>>> origin/main
     private final GameScreen juego;
     private final SpriteBatch batch;
     private final BitmapFont font;
@@ -27,7 +35,10 @@ public class PausaScreen implements Screen {
     private final Boton botonReiniciar;
     private final Boton botonMenu;
     private Boton botonControles;
+<<<<<<< HEAD
     private Texture fondo;
+=======
+>>>>>>> origin/main
  
     public PausaScreen(final GameLluviaMenu game, GameScreen juego) {
         this.game = game;
@@ -42,11 +53,14 @@ public class PausaScreen implements Screen {
         this.botonReiniciar = new Boton("Reiniciar (R)", 300, 225, 200, 50);
         this.botonMenu = new Boton("Menu principal (M)", 300, 95, 200, 50);
         crearBotonControles();
+<<<<<<< HEAD
  
         // Si el archivo no existe, la pausa funciona igual con fondo liso
         if (Gdx.files.internal(RUTA_FONDO).exists()) {
             fondo = new Texture(Gdx.files.internal(RUTA_FONDO));
         }
+=======
+>>>>>>> origin/main
     }
  
     private void crearBotonControles() {
@@ -55,7 +69,11 @@ public class PausaScreen implements Screen {
  
     @Override
     public void render(float delta) {
+<<<<<<< HEAD
         ScreenUtils.clear(0.08f, 0.06f, 0.12f, 1);
+=======
+        ScreenUtils.clear(0, 0, 0.3f, 1);
+>>>>>>> origin/main
         camera.update();
  
         puntero.set(Gdx.input.getX(), Gdx.input.getY(), 0);
@@ -65,6 +83,7 @@ public class PausaScreen implements Screen {
         boolean sobreControles = botonControles.contiene(puntero.x, puntero.y);
         boolean sobreMenu = botonMenu.contiene(puntero.x, puntero.y);
  
+<<<<<<< HEAD
         // 1) Fondo
         batch.setProjectionMatrix(camera.combined);
         if (fondo != null) {
@@ -74,6 +93,8 @@ public class PausaScreen implements Screen {
         }
  
         // 2) Botones
+=======
+>>>>>>> origin/main
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         botonContinuar.dibujarFondo(shapeRenderer, sobreContinuar);
@@ -82,6 +103,7 @@ public class PausaScreen implements Screen {
         botonMenu.dibujarFondo(shapeRenderer, sobreMenu);
         shapeRenderer.end();
  
+<<<<<<< HEAD
         // 3) Textos
         batch.begin();
         font.setColor(0f, 0f, 0f, 0.85f);
@@ -93,11 +115,19 @@ public class PausaScreen implements Screen {
         Boton.dibujarTextoCentrado(batch, font, "   ", 1.2f, 375, camera.viewportWidth);
         font.setColor(Color.WHITE);
  
+=======
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        Boton.dibujarTextoCentrado(batch, font, "Juego en pausa", 3f, 400, camera.viewportWidth);
+>>>>>>> origin/main
         botonContinuar.dibujarTexto(batch, font, sobreContinuar);
         botonReiniciar.dibujarTexto(batch, font, sobreReiniciar);
         botonControles.dibujarTexto(batch, font, sobreControles);
         botonMenu.dibujarTexto(batch, font, sobreMenu);
+<<<<<<< HEAD
         font.setColor(Color.WHITE);
+=======
+>>>>>>> origin/main
         batch.end();
  
         boolean click = Gdx.input.justTouched();
@@ -139,6 +169,7 @@ public class PausaScreen implements Screen {
     @Override
     public void dispose() {
         shapeRenderer.dispose();
+<<<<<<< HEAD
         if (fondo != null) {
             fondo.dispose();
             fondo = null;
@@ -146,3 +177,7 @@ public class PausaScreen implements Screen {
     }
 }
  
+=======
+    }
+}
+>>>>>>> origin/main

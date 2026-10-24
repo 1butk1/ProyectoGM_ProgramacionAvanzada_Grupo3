@@ -8,7 +8,11 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(60);
+<<<<<<< HEAD
 		config.setTitle("Salvation Rain");
+=======
+		config.setTitle("ProyectoGM_Grupo3");
+>>>>>>> origin/main
 		new Lwjgl3Application(new GameLluviaMenu(), config);
 	}
 }

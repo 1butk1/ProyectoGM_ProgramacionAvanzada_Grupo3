@@ -10,12 +10,21 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
+<<<<<<< HEAD
 import com.badlogic.gdx.audio.Sound;
  
 public class GameScreen implements Screen {
  
 	private static final int VIDAS_INICIALES = 3;
 	private final Sound sonidoNivel;
+=======
+
+
+public class GameScreen implements Screen {
+
+	private static final int VIDAS_INICIALES = 3;
+	 
+>>>>>>> origin/main
     private final GameLluviaMenu game;
     private final OrthographicCamera camera;
     private final SpriteBatch batch;
@@ -24,7 +33,10 @@ public class GameScreen implements Screen {
     private final Lluvia lluvia;
     private final GameManager manager;
     private final LevelManager levelManager;
+<<<<<<< HEAD
     private final Transcion transicion = new Transcion();
+=======
+>>>>>>> origin/main
  
     private final EstrategiaControles controlTeclado = new ControlTeclado();
     private final EstrategiaControles controlMouse = new ControlMouse();
@@ -33,16 +45,20 @@ public class GameScreen implements Screen {
     private Texture fondo;
     private boolean liberado = false;
  
+<<<<<<< HEAD
     // Lo que muestra el HUD: se actualiza al quedar la pantalla en negro, no antes
     private int nivelMostrado;
     private String nombreMostrado;
  
+=======
+>>>>>>> origin/main
     public GameScreen(final GameLluviaMenu game) {
         this.game = game;
         this.batch = game.getBatch();
         this.font = game.getFont();
         this.manager = new GameManager(VIDAS_INICIALES);
         this.levelManager = new LevelManager();
+<<<<<<< HEAD
         this.sonidoNivel = Gdx.audio.newSound(Gdx.files.internal("sonidonivel.mp3"));
  
         Sound hurtSound = Gdx.audio.newSound(Gdx.files.internal("hurt.ogg"));
@@ -51,10 +67,16 @@ public class GameScreen implements Screen {
         Texture texBaldeCaido = new Texture(Gdx.files.internal("balde_caido.png")); // Reemplaza con tu archivo
  
         tarro = new Tarro(texPrincipal, texSinBalde, texBaldeCaido, controlTeclado, hurtSound);
+=======
+ 
+        Sound hurtSound = Gdx.audio.newSound(Gdx.files.internal("hurt.ogg"));
+        tarro = new Tarro(new Texture(Gdx.files.internal("bucket.png")), controlTeclado, hurtSound);
+>>>>>>> origin/main
  
         Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
         Music rainMusic = Gdx.audio.newMusic(Gdx.files.internal("rain.mp3"));
         lluvia = new Lluvia(dropSound, rainMusic);
+<<<<<<< HEAD
  
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
@@ -62,6 +84,12 @@ public class GameScreen implements Screen {
         aplicarNivel(); // imprescindible: sin config no cae ninguna gota
         nivelMostrado = levelManager.getCurrentLevel();
         nombreMostrado = levelManager.getCurrentConfig().getName();
+=======
+        aplicarNivel(); // imprescindible: sin config no cae ninguna gota
+ 
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, 800, 480);
+>>>>>>> origin/main
     }
  
     /** Aplica la config del nivel actual a la lluvia y carga su fondo (si existe). */
@@ -79,6 +107,7 @@ public class GameScreen implements Screen {
         }
     }
  
+<<<<<<< HEAD
     /**
      * Arranca la transicion: el juego se congela, la pantalla oscurece y SOLO cuando esta
      * en negro se cambian fondo, configuracion y gotas.
@@ -97,6 +126,8 @@ public class GameScreen implements Screen {
         });
     }
  
+=======
+>>>>>>> origin/main
     // ---- usado desde PausaScreen ----
     public void alternarControles() {
         usandoMouse = !usandoMouse;
@@ -115,6 +146,7 @@ public class GameScreen implements Screen {
             return;
         }
  
+<<<<<<< HEAD
         transicion.actualizar(delta);
  
         if (manager.isPlaying() && !tarro.isHurt() && !transicion.bloqueaJuego()) {
@@ -124,6 +156,14 @@ public class GameScreen implements Screen {
             // No se evalua un nuevo nivel mientras otra transicion sigue en curso
             if (!transicion.estaActiva() && levelManager.updateForScore(manager.getScore())) {
                 iniciarCambioDeNivel();
+=======
+        if (manager.isPlaying() && !tarro.isHurt()) {
+            tarro.updateMovement(delta);
+            lluvia.update(delta, tarro, manager);
+ 
+            if (levelManager.updateForScore(manager.getScore())) {
+                aplicarNivel();
+>>>>>>> origin/main
             }
         }
  
@@ -142,16 +182,27 @@ public class GameScreen implements Screen {
  
         batch.begin();
         if (fondo != null) {
+<<<<<<< HEAD
             transicion.dibujarFondo(batch, fondo); // aplica el zoom de la transicion (1.0 si no hay)
+=======
+            batch.draw(fondo, 0, 0, 800, 480);
+>>>>>>> origin/main
         }
         font.draw(batch, "Gotas totales: " + manager.getScore(), 5, 475);
         font.draw(batch, "HighScore : " + game.getHigherScore(), camera.viewportWidth / 2 - 50, 475);
         font.draw(batch, "Vidas : " + tarro.getLives(), 670, 475);
         font.draw(batch, "ESC / P: Pausa", 5, 455);
+<<<<<<< HEAD
         font.draw(batch, "Nivel " + nivelMostrado + " - " + nombreMostrado, 5, 435);
         tarro.draw(batch);
         lluvia.render(batch);
         transicion.dibujarOverlay(batch, font); // oscurece, barras y titulo (siempre al final)
+=======
+        font.draw(batch, "Nivel " + levelManager.getCurrentLevel()
+                + " - " + levelManager.getCurrentConfig().getName(), 5, 435);
+        tarro.draw(batch);
+        lluvia.render(batch);
+>>>>>>> origin/main
         batch.end();
     }
  
@@ -175,7 +226,10 @@ public class GameScreen implements Screen {
     public void show() {
         manager.resume();
         lluvia.startMusic();
+<<<<<<< HEAD
         sonidoNivel.play(0.7f);
+=======
+>>>>>>> origin/main
     }
  
     @Override
@@ -195,9 +249,13 @@ public class GameScreen implements Screen {
         liberado = true;
         tarro.dispose();   // textura + sonido de herido
         lluvia.dispose();  // texturas de gotas, sonido y musica
+<<<<<<< HEAD
         transicion.dispose();
         if (fondo != null) fondo.dispose();
         sonidoNivel.dispose();
+=======
+        if (fondo != null) fondo.dispose();
+>>>>>>> origin/main
     }
 }
  

@@ -5,15 +5,24 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+<<<<<<< HEAD
  
 public class Boton {
 	private final String texto;
 	private final Rectangle area;
  
+=======
+
+public class Boton {
+	private final String texto;
+	private final Rectangle area;
+
+>>>>>>> origin/main
 	public Boton(String texto, float x, float y, float ancho, float alto) {
 		this.texto = texto;
 		this.area = new Rectangle(x, y, ancho, alto);
 	}
+<<<<<<< HEAD
  
 	public boolean contiene(float x, float y) {
 		return area.contains(x, y);
@@ -39,6 +48,25 @@ public class Boton {
 	public void dibujarTexto(SpriteBatch batch, BitmapFont font, boolean resaltado) {
 		font.getData().setScale(1.3f);
 		font.setColor(resaltado ? new Color(0.94f, 0.88f, 0.66f, 1f) : new Color(0.78f, 0.80f, 0.76f, 1f));
+=======
+
+	public boolean contiene(float x, float y) {
+		return area.contains(x, y);
+	}
+
+	public void dibujarFondo(ShapeRenderer shapeRenderer, boolean resaltado) {
+		if (resaltado) {
+			shapeRenderer.setColor(0.25f, 0.5f, 0.95f, 1f);
+		} else {
+			shapeRenderer.setColor(0.1f, 0.3f, 0.7f, 1f);
+		}
+		shapeRenderer.rect(area.x, area.y, area.width, area.height);
+	}
+
+	public void dibujarTexto(SpriteBatch batch, BitmapFont font, boolean resaltado) {
+		font.getData().setScale(1.3f);
+		font.setColor(resaltado ? Color.YELLOW : Color.WHITE);
+>>>>>>> origin/main
 		GlyphLayout layout = new GlyphLayout(font, texto);
 		float x = area.x + (area.width - layout.width) / 2;
 		float y = area.y + (area.height + layout.height) / 2;
@@ -46,7 +74,11 @@ public class Boton {
 		font.setColor(Color.WHITE);
 		font.getData().setScale(1f);
 	}
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> origin/main
 	public static void dibujarTextoCentrado(SpriteBatch batch, BitmapFont font, String texto, float escala, float y, float anchoPantalla) {
 		font.getData().setScale(escala);
 		GlyphLayout layout = new GlyphLayout(font, texto);
@@ -54,4 +86,7 @@ public class Boton {
 		font.getData().setScale(1f);
 	}
 }
+<<<<<<< HEAD
  
+=======
+>>>>>>> origin/main
