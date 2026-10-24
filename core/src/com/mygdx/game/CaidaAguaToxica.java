@@ -12,4 +12,4 @@ public class CaidaAguaToxica extends CaidaObject implements EfectoCaida {
 	        gestor.registerContaminatedHit();
 	    }
 	}
-}
+
