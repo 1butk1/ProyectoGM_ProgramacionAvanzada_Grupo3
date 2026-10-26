@@ -4,7 +4,7 @@ import com.mygdx.game.GameLluviaMenu;
 
 public class ModoHistoria implements ModoJuego {
 
-	public static final int META = 450;
+	public static final int META = 1300;
 
 	private static final String[] MENSAJES = {
 		    "La lluvia no ha parado desde hace a\u00f1os. Cada gota cuenta.",                 

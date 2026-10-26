@@ -111,7 +111,9 @@ public class GameScreen implements Screen {
         lluvia.setLevelConfig(config);
         lluvia.setNivelActual(levelManager.getCurrentLevel());
         tarro.setSaltoHabilitado(config.isJumpEnabled());
-        oscuroActivo = config.getName().equals("Mina");
+        oscuroActivo = config.getName().equals("Cueva");
+        String nombre = config.getName();
+        lluvia.setRadiactivasActivas(nombre.equals("Planta") || nombre.equals("Ciudad"));
         if (!modo.esCiclico()) {
             Progreso.desbloquear(levelManager.getIndiceNivel());  
         }

@@ -26,33 +26,33 @@ public class LevelManager {
         niveles.add(new LevelConfig.Builder()
                 .setName("Bosque").setBackgroundPath("fondos/bosque.png")
                 .setDropSpeed(170f).setSpawnInterval(1.2f)
-                .setScoreRequired(150).setGoldenDropThreshold(30)
+                .setScoreRequired(100).setGoldenDropThreshold(30)
                 .setJumpEnabled(true).build());
 
         niveles.add(new LevelConfig.Builder()
                 .setName("Pueblo").setBackgroundPath("fondos/pueblo.png")
                 .setDropSpeed(50f).setSpawnInterval(0.9f)
-                .setScoreRequired(350).setGoldenDropThreshold(50)
+                .setScoreRequired(250).setGoldenDropThreshold(50)
                 .setJumpEnabled(true).build());
 
         
         niveles.add(new LevelConfig.Builder()
                 .setName("Ciudad").setBackgroundPath("fondos/ciudad.png")
                 .setDropSpeed(300f).setSpawnInterval(0.6f)
-                .setScoreRequired(600).setGoldenDropThreshold(80)
+                .setScoreRequired(400).setGoldenDropThreshold(80)
                 .setJumpEnabled(true).build());
         
         niveles.add(new LevelConfig.Builder()
                 .setName("Planta").setBackgroundPath("fondos/planta.png")
                 .setDropSpeed(300f).setSpawnInterval(0.6f)
-                .setScoreRequired(900).setGoldenDropThreshold(80)
+                .setScoreRequired(550).setGoldenDropThreshold(80)
                 .setJumpEnabled(true).build());
         
         
         niveles.add(new LevelConfig.Builder()
-                .setName("Mina").setBackgroundPath("fondos/mina.png")
+                .setName("Cueva").setBackgroundPath("fondos/cueva.png")
                 .setDropSpeed(300f).setSpawnInterval(0.6f)
-                .setScoreRequired(1300).setGoldenDropThreshold(80).setJumpEnabled(true).build());
+                .setScoreRequired(700).setGoldenDropThreshold(80).setJumpEnabled(true).build());
 
         if (!modo.esCiclico()) {
             indiceNivelActual = Math.max(0, Math.min(nivelInicial, niveles.size - 1));

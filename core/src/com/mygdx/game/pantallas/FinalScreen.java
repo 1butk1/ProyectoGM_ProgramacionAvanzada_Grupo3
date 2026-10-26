@@ -34,7 +34,7 @@ public class FinalScreen implements Screen {
         this.game = game;
         this.batch = game.getBatch();
         this.font = game.getFont();
-        this.camera = new OrthographicCamera();
+        this.camera = new OrthographicCamera();  
         this.camera.setToOrtho(false, 800, 480);
         this.shapeRenderer = new ShapeRenderer();
         this.botonMenu = new Boton("Volver al menu (M)", 540, 120, 200, 50);

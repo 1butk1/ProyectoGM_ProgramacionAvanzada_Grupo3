@@ -20,9 +20,9 @@ public class CinematicaScreen implements Screen {
 	        Screen crear();
 	    }
 
-	    private static final float FADE = 0.9f;    // segundos de fundido
-	    private static final float MINIMO = 1.5f;  // antes de poder avanzar
-	    private static final float AUTO = 7f;      // avanza sola pasado este tiempo
+	    private static final float FADE = 0.9f;    
+	    private static final float MINIMO = 1.5f;  
+	    private static final float AUTO = 7f;      
 
 	    private final GameLluviaMenu game;
 	    private final SpriteBatch batch;
