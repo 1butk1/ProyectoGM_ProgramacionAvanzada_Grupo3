@@ -1,13 +1,15 @@
 package com.mygdx.game.template;
 import com.mygdx.game.logica.*;
 import com.mygdx.game.personaje.*;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 
 public class CaidaAguaToxica extends CaidaObject implements EfectoCaida {
-	 public CaidaAguaToxica(float x, float y, float velocidad, Texture textura) {
-	        super(x, y, 48f, 48f, velocidad, textura);
-	    }
-	 
+	 public CaidaAguaToxica(float x, float y, float velocidad, Texture textura) { super(x, y, 48f, 48f, velocidad, textura);}
+	 @Override
+	 public void colorVision(Color destino) {
+	     destino.set(1f, 0.2f, 0.2f, 0.45f);
+	 }
 	    @Override
 	    public void applyEffect(Tarro tarro, GameManager gestor) {
 	        tarro.receiveDamage();
