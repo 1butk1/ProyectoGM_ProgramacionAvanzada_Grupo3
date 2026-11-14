@@ -5,71 +5,57 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
+import com.mygdx.game.logica.GameManager;
 import com.mygdx.game.strategy.EstrategiaControles;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-
+import com.mygdx.game.logica.GameSettings;
 public class Tarro {
 
     private static final float ANCHO_PANTALLA = 800f;
     private static final float VELOCIDAD_BASE = 400f;
     private static final float FACTOR_LENTITUD = 0.4f;
-    private static final int VIDAS_INICIALES = 3;
     private static final int FRAMES_HERIDO = 50;
-    private static final int MAX_VIDAS = 10;
-
-    // Mecanica del balde caido SOLO la provoca el golpe de un buitre 
-    private static final float TIEMPO_LIMITE_BALDE = 6f;     
-    private static final float TIEMPO_BLOQUEO = 0.5f;        
-    private static final float FACTOR_SIN_BALDE = 1.2f;      
+    private static final float TIEMPO_LIMITE_BALDE = 6f;
+    private static final float TIEMPO_BLOQUEO = 0.5f;
+    private static final float FACTOR_SIN_BALDE = 1.2f;
     private static final float GRAVEDAD = 1400f;
     private static final float FRICCION = 450f;
     private static final float ANCHO_BALDE = 40f;
     private static final float ALTO_BALDE = 28f;
     private static final float SUELO_BALDE = 22f;
-    private float volumenEfectos = 1f;
-   
     private static final float SUELO_Y = 20f;
-    private static final float VEL_SALTO = 620f;       
+    private static final float VEL_SALTO = 620f;
     private static final float GRAVEDAD_SALTO = 1500f;
-
+    private final GameManager gestor;   
     private boolean saltoHabilitado = false;
     private float velY = 0f;
     private boolean enSuelo = true;
-    
-
-    private Rectangle area;
-    private int vidas;
+    private final Rectangle area;
     private float velocidadMovimiento;
     private boolean escudoActivo;
     private float temporizadorLentitud;
     private EstrategiaControles estrategiaControl;
-    private Texture textura;            // personaje CON balde
-    private Texture texturaSinBalde;    // personaje sin balde
-    private Texture texturaBaldeCaido;  // balde tirado en el suelo
-    private Sound sonidoHerido;
-
-    // animacion de herido
+    private final Texture textura;            
+    private final Texture texturaSinBalde;    
+    private final Texture texturaBaldeCaido;  
+    private final Sound sonidoHerido;
     private boolean herido;
     private int temporizadorHerido;
-
-    // estado del balde
     private boolean tieneBalde;
-    private Rectangle areaBalde;
+    private final Rectangle areaBalde;
     private float baldeVx;
     private float baldeVy;
     private float tiempoSinBalde;
 
     public Tarro(Texture textura, Texture texturaSinBalde, Texture texturaBaldeCaido,
-                 EstrategiaControles estrategiaControl, Sound sonidoHerido) {
+                 EstrategiaControles estrategiaControl, Sound sonidoHerido, GameManager gestor) {
         this.textura = textura;
         this.texturaSinBalde = texturaSinBalde;
         this.texturaBaldeCaido = texturaBaldeCaido;
         this.estrategiaControl = estrategiaControl;
         this.sonidoHerido = sonidoHerido;
-        this.area = new Rectangle(ANCHO_PANTALLA / 2f - 32f, 20f, 64f, 64f);
+        this.gestor = gestor;
+        this.area = new Rectangle(ANCHO_PANTALLA / 2f - 32f, SUELO_Y, 64f, 64f);
         this.areaBalde = new Rectangle(0, SUELO_BALDE, ANCHO_BALDE, ALTO_BALDE);
-        this.vidas = VIDAS_INICIALES;
         this.velocidadMovimiento = VELOCIDAD_BASE;
         this.escudoActivo = false;
         this.temporizadorLentitud = 0f;
@@ -77,6 +63,7 @@ public class Tarro {
         this.tieneBalde = true;
     }
 
+   
     public void updateMovement(float delta) {
         if (!tieneBalde) actualizarBaldeCaido(delta);
         if (herido) return;
@@ -94,7 +81,7 @@ public class Tarro {
         if (!tieneBalde) actualizarRecuperacion(delta);
     }
 
-    // ---------------- balde caido ----------------
+   
 
     private void soltarBalde() {
         tieneBalde = false;
@@ -111,7 +98,7 @@ public class Tarro {
 
         if (areaBalde.y <= SUELO_BALDE) {
             areaBalde.y = SUELO_BALDE;
-            baldeVy = (Math.abs(baldeVy) > 150f) ? -baldeVy * 0.35f : 0f;   // rebote
+            baldeVy = (Math.abs(baldeVy) > 150f) ? -baldeVy * 0.35f : 0f; 
         }
 
         if (areaBalde.y <= SUELO_BALDE + 0.01f && baldeVx != 0f) {
@@ -132,54 +119,51 @@ public class Tarro {
         tiempoSinBalde += delta;
 
         if (tiempoSinBalde >= TIEMPO_BLOQUEO && area.overlaps(areaBalde)) {
-            tieneBalde = true;              // lo recogio a tiempo
+            tieneBalde = true;              
             return;
         }
 
         if (tiempoSinBalde >= TIEMPO_LIMITE_BALDE) {
-            // No llego a tiempo: pierde una vida y recupera un balde nuevo
+            
             tieneBalde = true;
-            if (vidas > 0) vidas--;
-            herido = true;
-            temporizadorHerido = FRAMES_HERIDO;
-            sonidoHerido.play(volumenEfectos);
+            gestor.perderVida();
+            iniciarAnimacionHerido();
         }
+    }
+
+    private void iniciarAnimacionHerido() {
+        herido = true;
+        temporizadorHerido = FRAMES_HERIDO;
+        sonidoHerido.play(GameSettings.getInstance().getVolumenEfectosEfectivo());
     }
 
     public void setControlStrategy(EstrategiaControles estrategia) {
         this.estrategiaControl = estrategia;
     }
-    public void setVolumenEfectos(float v) { volumenEfectos = v; }
-
-    // Recibe dano: si hay escudo lo consume, si no pierde una vida. 
-    public void receiveDamage() {
+        public void receiveDamage() {
+        if (herido) return;	
         if (escudoActivo) {
             escudoActivo = false;
             return;
         }
-        if (vidas > 0) vidas--;
-        herido = true;
-        temporizadorHerido = FRAMES_HERIDO;
-        sonidoHerido.play(volumenEfectos);
+        gestor.perderVida();
+        iniciarAnimacionHerido();
     }
 
     public void golpeDeBuitre() {
-        if (!tieneBalde) return;          // ya lo perdio: no se castiga dos veces
+        if (!tieneBalde) return;          
         if (escudoActivo) {
             escudoActivo = false;
             return;
         }
-        herido = true;
-        temporizadorHerido = FRAMES_HERIDO;
-        sonidoHerido.play(volumenEfectos);
+        iniciarAnimacionHerido();
         soltarBalde();
     }
-    
+
     public boolean addLife() {
-        if (vidas >= MAX_VIDAS) return false;
-        vidas++;
-        return true;
+        return gestor.ganarVida();
     }
+
     public void setSaltoHabilitado(boolean v) {
         saltoHabilitado = v;
         if (!v) { area.y = SUELO_Y; velY = 0f; enSuelo = true; }
@@ -189,9 +173,8 @@ public class Tarro {
 
     private void actualizarSalto(float delta) {
         if (!saltoHabilitado) return;
-        if (enSuelo && (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
-                || Gdx.input.isKeyJustPressed(Input.Keys.UP)
-                || Gdx.input.isKeyJustPressed(Input.Keys.W))) {
+        
+        if (enSuelo && estrategiaControl.quiereSaltar()) {
             velY = VEL_SALTO;
             enSuelo = false;
         }
@@ -205,21 +188,18 @@ public class Tarro {
             }
         }
     }
-    
 
     public void activateShield() { escudoActivo = true; }
     public void applySlow(float duracion) { temporizadorLentitud = Math.max(temporizadorLentitud, duracion); }
-    public Rectangle getBounds() { return area; }
+    public Rectangle getBounds() { return new Rectangle(area); }
+    public Rectangle getBucketBounds() { return new Rectangle(areaBalde); }
     public boolean hasShield() { return escudoActivo; }
-    public int getLives() { return vidas; }
-    public boolean isGameOver() { return vidas <= 0; }
     public boolean isHurt() { return herido; }
     public boolean hasBucket() { return tieneBalde; }
 
     public float getBucketTimeLeft() {
         return tieneBalde ? 0f : Math.max(0f, TIEMPO_LIMITE_BALDE - tiempoSinBalde);
     }
-    public Rectangle getBucketBounds() { return areaBalde; }
 
     public void draw(SpriteBatch batch) {
         if (!tieneBalde) {
@@ -253,7 +233,6 @@ public class Tarro {
         batch.draw(personaje, x, y, area.width, area.height);
         batch.setColor(1f, 1f, 1f, 1f);
     }
-    
 
     public void dispose() {
         textura.dispose();
