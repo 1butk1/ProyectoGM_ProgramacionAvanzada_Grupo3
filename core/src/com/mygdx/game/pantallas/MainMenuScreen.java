@@ -13,11 +13,15 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.GameLluviaMenu;
+import com.mygdx.game.logica.GameSettings;
 import com.mygdx.game.ui.Boton;
+import com.mygdx.game.ui.Visual;
 
 public class MainMenuScreen implements Screen {
 
 	private static final String RUTA_FONDO = "fondos/menu.png";
+	private static final Color COLOR_POLVO = new Color(0.86f, 0.84f, 0.76f, 0.5f);
+
 	private final Sound sonidoMenu;
 	private final GameLluviaMenu game;
 	private final SpriteBatch batch;
@@ -27,13 +31,15 @@ public class MainMenuScreen implements Screen {
 	private final Vector3 puntero;
 	private final Boton botonJugar;
 	private final Boton botonSalir;
-	private Texture fondo;
 	private final Boton botonOpciones;
-	
+	private final Visual visual;
+	private Texture fondo;
+
 	public MainMenuScreen(final GameLluviaMenu game) {
 		this.game = game;
 		this.batch = game.getBatch();
 		this.font = game.getFont();
+		this.visual = new Visual(font);
 		this.camera = new OrthographicCamera();
 		this.sonidoMenu = Gdx.audio.newSound(Gdx.files.internal("sonidomenu.mp3"));
 		this.camera.setToOrtho(false, 800, 480);
@@ -60,72 +66,53 @@ public class MainMenuScreen implements Screen {
 		boolean sobreSalir = botonSalir.contiene(puntero.x, puntero.y);
 		boolean sobreOpciones = botonOpciones.contiene(puntero.x, puntero.y);
 
-		// 1) Fondo
 		batch.setProjectionMatrix(camera.combined);
-		if (fondo != null) {
-			batch.begin();
-			batch.draw(fondo, 0, 0, 800, 480);
-			batch.end();
-		}
-
-		// 2) Botones
+		batch.begin();
+		if (fondo != null) visual.fondo(batch, fondo);
+		visual.lluvia(batch, delta);
+		visual.polvo(batch, delta, COLOR_POLVO);
+		visual.vineta(batch);
+		batch.end();
 		shapeRenderer.setProjectionMatrix(camera.combined);
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 		botonJugar.dibujarFondo(shapeRenderer, sobreJugar);
-		botonOpciones.dibujarFondo(shapeRenderer, sobreOpciones);  
+		botonOpciones.dibujarFondo(shapeRenderer, sobreOpciones);
 		botonSalir.dibujarFondo(shapeRenderer, sobreSalir);
 		shapeRenderer.end();
-
-		// 3) Textos
 		batch.begin();
-
-		font.setColor(0f, 0f, 0f, 0.85f);
-		Boton.dibujarTextoCentrado(batch, font, "Salvation Rain", 3.5f, 407, camera.viewportWidth + 6);
-		font.setColor(0.86f, 0.84f, 0.76f, 1f);
-		Boton.dibujarTextoCentrado(batch, font, "Salvation Rain", 3.5f, 410, camera.viewportWidth);
-
-		font.setColor(0.58f, 0.64f, 0.60f, 1f);
-		Boton.dibujarTextoCentrado(batch, font, "A Little Hope...", 1.3f, 362, camera.viewportWidth);
-
-		
-
+		visual.titulo(batch, "Salvation Rain", 410f, 3.5f, Visual.HUESO);
+		visual.texto(batch, "A Little Hope...", 362f, 1.3f, Visual.MUSGO);
 		botonJugar.dibujarTexto(batch, font, sobreJugar);
-		botonOpciones.dibujarTexto(batch, font, sobreOpciones);    
+		botonOpciones.dibujarTexto(batch, font, sobreOpciones);
 		botonSalir.dibujarTexto(batch, font, sobreSalir);
 		font.setColor(Color.WHITE);
 		batch.end();
-
 		boolean click = Gdx.input.justTouched();
-
+		
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || (click && sobreJugar)) {
 			game.setScreen(new SeleccionModo(game));
 			return;
 		}
-
-		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) || (click && sobreSalir)) {
-			Gdx.app.exit();
-		}
+	
+		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) || (click && sobreSalir)) {Gdx.app.exit();}
 		if (Gdx.input.isKeyJustPressed(Input.Keys.O) || (click && sobreOpciones)) {
-		    game.setScreen(new OpcionesScreen(game));
-		    return;
+			game.setScreen(new OpcionesScreen(game));
+			return;
 		}
 	}
 
 	@Override
-	public void show() {sonidoMenu.play(0.8f * game.getVolumenMusica());}
-
+	public void show() { sonidoMenu.play(0.8f * GameSettings.getInstance().getVolumenMusicaEfectivo()); }
 	@Override public void resize(int width, int height) { }
 	@Override public void pause() { }
 	@Override public void resume() { }
-
 	@Override
-	public void hide() {
-		dispose();
-	}
-
+	public void hide() {dispose();}
+	
 	@Override
 	public void dispose() {
 		shapeRenderer.dispose();
+		visual.dispose();
 		if (fondo != null) {
 			fondo.dispose();
 			fondo = null;
