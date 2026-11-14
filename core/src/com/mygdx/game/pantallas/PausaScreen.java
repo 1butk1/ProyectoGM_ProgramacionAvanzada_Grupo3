@@ -16,7 +16,6 @@ import com.mygdx.game.ui.Boton;
 public class PausaScreen implements Screen {
  
     private static final String RUTA_FONDO = "fondos/pausa.png";
- 
     private final GameLluviaMenu game;
     private final GameScreen juego;
     private final SpriteBatch batch;
@@ -29,7 +28,6 @@ public class PausaScreen implements Screen {
     private final Boton botonMenu;
     private Boton botonControles;
     private Texture fondo;
- 
     public PausaScreen(final GameLluviaMenu game, GameScreen juego) {
         this.game = game;
         this.juego = juego;
@@ -44,14 +42,10 @@ public class PausaScreen implements Screen {
         this.botonMenu = new Boton("Menu principal (M)", 300, 95, 200, 50);
         crearBotonControles();
 
-        if (Gdx.files.internal(RUTA_FONDO).exists()) {
-            fondo = new Texture(Gdx.files.internal(RUTA_FONDO));
-        }
+        if (Gdx.files.internal(RUTA_FONDO).exists()) {fondo = new Texture(Gdx.files.internal(RUTA_FONDO));}
     }
- 
-    private void crearBotonControles() {
-        this.botonControles = new Boton("Control: " + juego.getNombreControl() + " (C)", 300, 160, 200, 50);
-    }
+    
+    private void crearBotonControles() {this.botonControles = new Boton("Control: " + juego.getNombreControl() + " (C)", 300, 160, 200, 50);}
  
     @Override
     public void render(float delta) {
@@ -64,16 +58,13 @@ public class PausaScreen implements Screen {
         boolean sobreReiniciar = botonReiniciar.contiene(puntero.x, puntero.y);
         boolean sobreControles = botonControles.contiene(puntero.x, puntero.y);
         boolean sobreMenu = botonMenu.contiene(puntero.x, puntero.y);
- 
-        // 1) Fondo
         batch.setProjectionMatrix(camera.combined);
         if (fondo != null) {
             batch.begin();
             batch.draw(fondo, 0, 0, 800, 480);
             batch.end();
         }
- 
-        // 2) Botones
+        
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         botonContinuar.dibujarFondo(shapeRenderer, sobreContinuar);
@@ -81,29 +72,25 @@ public class PausaScreen implements Screen {
         botonControles.dibujarFondo(shapeRenderer, sobreControles);
         botonMenu.dibujarFondo(shapeRenderer, sobreMenu);
         shapeRenderer.end();
- 
-        // 3) Textos
         batch.begin();
+        
         if (fondo == null) {
             font.setColor(0f, 0f, 0f, 0.85f);
             Boton.dibujarTextoCentrado(batch, font, "PAUSA", 3.5f, 427, camera.viewportWidth + 6);
             font.setColor(0.86f, 0.84f, 0.76f, 1f);
             Boton.dibujarTextoCentrado(batch, font, "PAUSA", 3.5f, 430, camera.viewportWidth);
         }
- 
+
         font.setColor(0.58f, 0.64f, 0.60f, 1f);
         Boton.dibujarTextoCentrado(batch, font, "Descansa en el refugio", 1.2f, 375, camera.viewportWidth);
         font.setColor(Color.WHITE);
- 
         botonContinuar.dibujarTexto(batch, font, sobreContinuar);
         botonReiniciar.dibujarTexto(batch, font, sobreReiniciar);
         botonControles.dibujarTexto(batch, font, sobreControles);
         botonMenu.dibujarTexto(batch, font, sobreMenu);
         font.setColor(Color.WHITE);
         batch.end();
- 
         boolean click = Gdx.input.justTouched();
- 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) || Gdx.input.isKeyJustPressed(Input.Keys.P)
                 || (click && sobreContinuar)) {
             game.setScreen(juego);
@@ -115,7 +102,6 @@ public class PausaScreen implements Screen {
             crearBotonControles();
             return;
         }
- 
         if (Gdx.input.isKeyJustPressed(Input.Keys.R) || (click && sobreReiniciar)) {
             juego.dispose();
             game.setScreen(new GameScreen(game, juego.getModo()));
@@ -127,17 +113,13 @@ public class PausaScreen implements Screen {
             game.setScreen(new MainMenuScreen(game));
         }
     }
- 
+    
     @Override public void show() { }
     @Override public void resize(int width, int height) { }
     @Override public void pause() { }
     @Override public void resume() { }
- 
     @Override
-    public void hide() {
-        dispose();
-    }
- 
+    public void hide() {dispose();}
     @Override
     public void dispose() {
         shapeRenderer.dispose();

@@ -51,14 +51,11 @@ public class SeleccionModo implements Screen {
 	public void render(float delta) {
 		ScreenUtils.clear(0.06f, 0.08f, 0.08f, 1);
 		camera.update();
-
 		puntero.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 		camera.unproject(puntero);
 		boolean sobreHistoria = botonHistoria.contiene(puntero.x, puntero.y);
 		boolean sobreInfinito = botonInfinito.contiene(puntero.x, puntero.y);
 		boolean sobreVolver = botonVolver.contiene(puntero.x, puntero.y);
-
-		// 1) Fondo
 		batch.setProjectionMatrix(camera.combined);
 		if (fondo != null) {
 			batch.begin();
@@ -66,24 +63,19 @@ public class SeleccionModo implements Screen {
 			batch.end();
 		}
 
-		// 2) Botones
 		shapeRenderer.setProjectionMatrix(camera.combined);
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 		botonHistoria.dibujarFondo(shapeRenderer, sobreHistoria);
 		botonInfinito.dibujarFondo(shapeRenderer, sobreInfinito);
 		botonVolver.dibujarFondo(shapeRenderer, sobreVolver);
 		shapeRenderer.end();
-
-		// 3) Textos
 		batch.begin();
-
 		font.setColor(0f, 0f, 0f, 0.85f);
 		Boton.dibujarTextoCentrado(batch, font, "Salvation Rain", 3.5f, 407, camera.viewportWidth + 6);
 		font.setColor(0.86f, 0.84f, 0.76f, 1f);
 		Boton.dibujarTextoCentrado(batch, font, "Salvation Rain", 3.5f, 410, camera.viewportWidth);
 		font.setColor(0.58f, 0.64f, 0.60f, 1f);
 		Boton.dibujarTextoCentrado(batch, font, "Elige como jugar", 1.3f, 362, camera.viewportWidth);
-
 		font.setColor(0.72f, 0.76f, 0.72f, 1f);
 		if (sobreHistoria) {
 			Boton.dibujarTextoCentrado(batch, font,
@@ -104,7 +96,6 @@ public class SeleccionModo implements Screen {
 		botonVolver.dibujarTexto(batch, font, sobreVolver);
 		font.setColor(Color.WHITE);
 		batch.end();
-
 		boolean click = Gdx.input.justTouched();
 
 		if (Gdx.input.isKeyJustPressed(Input.Keys.H) || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)
@@ -117,27 +108,20 @@ public class SeleccionModo implements Screen {
 		    }));
 		    return;
 		}
-
 		if (Gdx.input.isKeyJustPressed(Input.Keys.I) || (click && sobreInfinito)) {
 			game.setScreen(new GameScreen(game, new ModoInfinito()));
 			return;
 		}
-
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) || (click && sobreVolver)) {
 			game.setScreen(new MainMenuScreen(game));
 		}
 	}
-
 	@Override public void show() { }
 	@Override public void resize(int width, int height) { }
 	@Override public void pause() { }
 	@Override public void resume() { }
-
 	@Override
-	public void hide() {
-		dispose();
-	}
-
+	public void hide() {dispose();}
 	@Override
 	public void dispose() {
 		shapeRenderer.dispose();

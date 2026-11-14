@@ -13,21 +13,13 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.GameLluviaMenu;
 import com.mygdx.game.builder.LevelConfig;
-import com.mygdx.game.builder.LevelManager;
+import com.mygdx.game.logica.LevelManager;
 import com.mygdx.game.logica.Progreso;
 import com.mygdx.game.modos.ModoJuego;
 
-/**
-  Selector de niveles del modo historia.
-  Controles: flechas o WASD para moverse, ENTER / ESPACIO para jugar,
-  ESC para volver, y tambien funciona con el mouse (pasar por encima y clic).
-  Los niveles aun no alcanzados salen bloqueados (se desbloquean al llegar a ellos).
- **/
-
 public class SelectorNivelesScreen implements Screen {
-
-    // Poner en true para tener todos los niveles abiertos desde el inicio. 
-    private static final boolean TODOS_ABIERTOS = false;
+	
+    private static final boolean TODOS_ABIERTOS = true;
     private static final int COLUMNAS = 3;
     private static final float TARJETA_ANCHO = 220f;
     private static final float TARJETA_ALTO = 150f;
@@ -49,13 +41,11 @@ public class SelectorNivelesScreen implements Screen {
     private final String[] nombres;
     private final Texture[] miniaturas;
     private final Texture pixel;
-
     private int seleccionado = 0;
     private int nivelMaximo = 0;
     private String aviso = null;
     private float tiempoAviso = 0f;
     private boolean liberado = false;
-
     public SelectorNivelesScreen(final GameLluviaMenu game, ModoJuego modo, final Screen pantallaAnterior) {
         this(game, modo, new Runnable() {
             @Override
@@ -64,17 +54,14 @@ public class SelectorNivelesScreen implements Screen {
             }
         });
     }
-
     public SelectorNivelesScreen(GameLluviaMenu game, ModoJuego modo, Runnable alVolver) {
         this.game = game;
         this.modo = modo;
         this.alVolver = alVolver;
         this.batch = game.getBatch();
         this.fuente = game.getFont();
-
         camara = new OrthographicCamera();
         camara.setToOrtho(false, 800, 480);
-
         LevelManager niveles = new LevelManager(modo);
         cantidad = niveles.getCantidadNiveles();
         nombres = new String[cantidad];
@@ -87,36 +74,28 @@ public class SelectorNivelesScreen implements Screen {
                 miniaturas[i] = new Texture(Gdx.files.internal(ruta));
             }
         }
-
         Pixmap pm = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pm.setColor(1f, 1f, 1f, 1f);
         pm.fill();
         pixel = new Texture(pm);
         pm.dispose();
-
         refrescarProgreso();
         seleccionado = Math.min(nivelMaximo, cantidad - 1);
     }
-
-    private void refrescarProgreso() {
-        nivelMaximo = TODOS_ABIERTOS ? cantidad - 1 : Progreso.getNivelMaximo();
-    }
-
-    private boolean estaDesbloqueado(int indice) {
-        return indice <= nivelMaximo;
-    }
-
+    private void refrescarProgreso() {nivelMaximo = TODOS_ABIERTOS ? cantidad - 1 : Progreso.getNivelMaximo();}
+    private boolean estaDesbloqueado(int indice) {return indice <= nivelMaximo;}
+    
     private float tarjetaX(int i) {
         float ancho = COLUMNAS * TARJETA_ANCHO + (COLUMNAS - 1) * SEPARACION;
         float inicio = (800f - ancho) / 2f;
         return inicio + (i % COLUMNAS) * (TARJETA_ANCHO + SEPARACION);
     }
-
+    
     private float tarjetaY(int i) {
         float arriba = TOPE_CUADRICULA - (i / COLUMNAS) * (TARJETA_ALTO + SEPARACION);
         return arriba - TARJETA_ALTO;
     }
-
+    
     private int tarjetaBajoPuntero(float x, float y) {
         for (int i = 0; i < cantidad; i++) {
             float tx = tarjetaX(i);
@@ -127,8 +106,6 @@ public class SelectorNivelesScreen implements Screen {
         }
         return -1;
     }
-
-    // ---------- logica ----------
 
     private void mostrarAviso(String texto) {
         aviso = texto;
@@ -154,10 +131,7 @@ public class SelectorNivelesScreen implements Screen {
             tiempoAviso -= delta;
             if (tiempoAviso <= 0f) aviso = null;
         }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            volviendo = true;
-        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) { volviendo = true;}
         if (volviendo) {
             if (!Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
                 volver();
@@ -169,17 +143,14 @@ public class SelectorNivelesScreen implements Screen {
         boolean der = Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || Gdx.input.isKeyJustPressed(Input.Keys.D);
         boolean arriba = Gdx.input.isKeyJustPressed(Input.Keys.UP) || Gdx.input.isKeyJustPressed(Input.Keys.W);
         boolean abajo = Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || Gdx.input.isKeyJustPressed(Input.Keys.S);
-
         if (izq) seleccionado = (seleccionado - 1 + cantidad) % cantidad;
         if (der) seleccionado = (seleccionado + 1) % cantidad;
         if (arriba && seleccionado - COLUMNAS >= 0) seleccionado -= COLUMNAS;
         if (abajo && seleccionado + COLUMNAS < cantidad) seleccionado += COLUMNAS;
-
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             jugar(seleccionado);
             return;
         }
-
         puntero.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         camara.unproject(puntero);
         int bajo = tarjetaBajoPuntero(puntero.x, puntero.y);
@@ -191,8 +162,6 @@ public class SelectorNivelesScreen implements Screen {
             jugar(bajo);
         }
     }
-
-    // ---------- dibujo ----------
 
     private void rectangulo(float x, float y, float w, float h, float r, float g, float b, float a) {
         batch.setColor(r, g, b, a);
@@ -216,8 +185,6 @@ public class SelectorNivelesScreen implements Screen {
         float y = tarjetaY(i);
         boolean abierto = estaDesbloqueado(i);
         boolean activo = (i == seleccionado);
-
-        // Borde: el seleccionado es amarillo y mas grueso (no depende solo del color)
         float grosor = activo ? BORDE + 2f : BORDE - 2f;
         if (activo) {
             rectangulo(x - grosor, y - grosor, TARJETA_ANCHO + 2 * grosor, TARJETA_ALTO + 2 * grosor,
@@ -228,7 +195,6 @@ public class SelectorNivelesScreen implements Screen {
         }
         rectangulo(x, y, TARJETA_ANCHO, TARJETA_ALTO, 0.08f, 0.10f, 0.12f, 1f);
 
-        // Miniatura (oscurecida si esta bloqueado)
         float mx = x + (TARJETA_ANCHO - MINIATURA_ANCHO) / 2f;
         float my = y + TARJETA_ALTO - MINIATURA_ALTO - 8f;
         if (miniaturas[i] != null) {
@@ -254,8 +220,7 @@ public class SelectorNivelesScreen implements Screen {
     @Override
     public void render(float delta) {
         leerEntrada(delta);
-        if (liberado) return;   // se cambio de pantalla en este frame
-
+        if (liberado) return;   
         ScreenUtils.clear(0.03f, 0.04f, 0.07f, 1f);
         camara.update();
         batch.setProjectionMatrix(camara.combined);
@@ -277,12 +242,10 @@ public class SelectorNivelesScreen implements Screen {
     public void show() {
         refrescarProgreso();
     }
-
     @Override public void resize(int width, int height) { }
     @Override public void pause() { }
     @Override public void resume() { }
     @Override public void hide() { }
-
     @Override
     public void dispose() {
         if (liberado) return;

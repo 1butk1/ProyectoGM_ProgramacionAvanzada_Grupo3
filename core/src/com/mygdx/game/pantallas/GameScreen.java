@@ -12,26 +12,27 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.GameLluviaMenu;
 import com.mygdx.game.builder.LevelConfig;
-import com.mygdx.game.builder.LevelManager;
-import com.mygdx.game.builder.Lluvia;
-import com.mygdx.game.builder.Transcion;
-import com.mygdx.game.builder.VisionLimitada;
 import com.mygdx.game.logica.GameManager;
+import com.mygdx.game.logica.GameSettings;
+import com.mygdx.game.logica.LevelManager;
+import com.mygdx.game.logica.Lluvia;
 import com.mygdx.game.logica.Progreso;
 import com.mygdx.game.modos.ModoJuego;
 import com.mygdx.game.personaje.Tarro;
 import com.mygdx.game.strategy.ControlMouse;
 import com.mygdx.game.strategy.ControlTeclado;
 import com.mygdx.game.strategy.EstrategiaControles;
- 
+import com.mygdx.game.ui.Transcion;
+import com.mygdx.game.ui.VisionLimitada;
+
 public class GameScreen implements Screen {
- 
-	private static final int VIDAS_INICIALES = 3;
-	private final Music musicaNivel;
-	private final Sound hurtSound;
+
+    private static final int VIDAS_INICIALES = 3;
+    private final Music musicaNivel;
+    private final Sound hurtSound;
     private final GameLluviaMenu game;
     private final ModoJuego modo;
-    private final int nivelInicial;   
+    private final int nivelInicial;
     private final OrthographicCamera camera;
     private final SpriteBatch batch;
     private final BitmapFont font;
@@ -49,14 +50,10 @@ public class GameScreen implements Screen {
     private boolean finalListo = false;
     private final VisionLimitada vision = new VisionLimitada();
     private boolean oscuroActivo = false;
-
     private int nivelMostrado;
     private String nombreMostrado;
-
-    public GameScreen(final GameLluviaMenu game, ModoJuego modo) {
-        this(game, modo, 0);
-    }
-
+    
+    public GameScreen(final GameLluviaMenu game, ModoJuego modo) {this(game, modo, 0);}
     public GameScreen(final GameLluviaMenu game, ModoJuego modo, int nivelInicial) {
         this.game = game;
         this.modo = modo;
@@ -65,47 +62,31 @@ public class GameScreen implements Screen {
         this.font = game.getFont();
         this.manager = new GameManager(VIDAS_INICIALES);
         this.levelManager = new LevelManager(modo, nivelInicial);
-   
+
         if (!modo.esCiclico() && nivelInicial > 0) {
             this.manager.addScore(levelManager.getPuntajeInicialNivel(levelManager.getIndiceNivel()));
         }
+        GameSettings ajustes = GameSettings.getInstance();
         this.musicaNivel = Gdx.audio.newMusic(Gdx.files.internal("sonidonivel.mp3"));
         this.musicaNivel.setLooping(true);
-        this.musicaNivel.setVolume(0.7f * game.getVolumenMusica());
+        this.musicaNivel.setVolume(0.7f * ajustes.getVolumenMusicaEfectivo());
         this.hurtSound = Gdx.audio.newSound(Gdx.files.internal("hurt.mp3"));
-        
-
         Texture texPrincipal = new Texture(Gdx.files.internal("bucket.png"));
         Texture texSinBalde = new Texture(Gdx.files.internal("personaje_sin_balde.png"));
         Texture texBaldeCaido = new Texture(Gdx.files.internal("balde_caido.png"));
-
-        tarro = new Tarro(texPrincipal, texSinBalde, texBaldeCaido, controlTeclado, hurtSound);
-
+        tarro = new Tarro(texPrincipal, texSinBalde, texBaldeCaido, controlTeclado, hurtSound, manager);
         Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
         Music rainMusic = Gdx.audio.newMusic(Gdx.files.internal("rain.mp3"));
         lluvia = new Lluvia(dropSound, rainMusic);
-
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
-
         nivelMostrado = levelManager.getCurrentLevel();
         nombreMostrado = levelManager.getCurrentConfig().getName();
         aplicarNivel();
-        tarro.setVolumenEfectos(game.getVolumenEfectos());
-        lluvia.setVolumenEfectos(game.getVolumenEfectos());
-        lluvia.setVolumenMusica(game.getVolumenMusica());
-
+      
+        if (nivelInicial > 0 || modo.getMensajeZona(0, 0) != null) {iniciarCambioDeNivel();}}
     
-        if (nivelInicial > 0 || modo.getMensajeZona(0, 0) != null) {
-            iniciarCambioDeNivel();
-        }
-       
-    }
-
-    public ModoJuego getModo() {
-        return modo;
-    }
-
+    public ModoJuego getModo() {return modo;}
     private void aplicarNivel() {
         LevelConfig config = levelManager.getCurrentConfig();
         lluvia.setLevelConfig(config);
@@ -115,7 +96,7 @@ public class GameScreen implements Screen {
         String nombre = config.getName();
         lluvia.setRadiactivasActivas(nombre.equals("Planta") || nombre.equals("Ciudad"));
         if (!modo.esCiclico()) {
-            Progreso.desbloquear(levelManager.getIndiceNivel());  
+            Progreso.desbloquear(levelManager.getIndiceNivel());
         }
 
         if (fondo != null) {
@@ -182,7 +163,7 @@ public class GameScreen implements Screen {
             return;
         }
 
-        if (manager.isPlaying() && !tarro.isHurt() && !transicion.bloqueaJuego()) {
+        if (manager.isPlaying() && !transicion.bloqueaJuego()) {
             tarro.updateMovement(delta);
             lluvia.update(delta, tarro, manager);
 
@@ -194,15 +175,15 @@ public class GameScreen implements Screen {
                 }
             }
         }
-
-        if (tarro.isGameOver() && !tarro.isHurt()) {
+        if (manager.getLives() <= 0 && !tarro.isHurt()) {
             manager.finishGame();
-        }
+ }
+        
         if (manager.isGameOver()) {
             terminarPartida();
             return;
         }
-
+        
         ScreenUtils.clear(0, 0, 0.2f, 1);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
@@ -214,15 +195,15 @@ public class GameScreen implements Screen {
         }
         font.draw(batch, "Gotas totales: " + manager.getScore(), 5, 475);
         font.draw(batch, "HighScore : " + modo.getHighScore(game), camera.viewportWidth / 2 - 50, 475);
-        font.draw(batch, "Vidas : " + tarro.getLives(), 670, 475);
+        font.draw(batch, "Vidas : " + manager.getLives(), 670, 475);
         font.draw(batch, "ESC / P: Pausa", 5, 455);
         font.draw(batch, "Nivel " + nivelMostrado + " - " + nombreMostrado, 5, 435);
-        
+
         lluvia.renderSuelo(batch);
         tarro.draw(batch);
         lluvia.render(batch);
         if (oscuroActivo) {
-            vision.dibujar(batch, tarro, lluvia.getGotas(), delta);
+            vision.dibujar(batch, tarro, lluvia, delta);
         }
         transicion.dibujarOverlay(batch, font);
         batch.end();
