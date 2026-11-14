@@ -1,4 +1,4 @@
-package com.mygdx.game.builder;
+package com.mygdx.game.ui;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -6,26 +6,20 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
-import com.mygdx.game.ui.Visual;
 
 public class Transcion {
 
 	private static final float ANCHO = 800f;
 	private static final float ALTO = 480f;
- 
 	private static final float DUR_BAJAR = 0.8f;
 	private static final float DUR_TITULO = 3f;
 	private static final float DUR_SUBIR = 1.0f;
- 
 	private static final float ZOOM_BAJAR = 1.06f;   
 	private static final float ZOOM_REVELAR = 1.10f; 
 	private static final float ALTO_BARRAS = 56f;
- 
 	private enum Fase { NINGUNA, BAJAR, TITULO, SUBIR }
- 
 	private final Texture pixel;
 	private final GlyphLayout layout = new GlyphLayout();
- 
 	private Fase fase = Fase.NINGUNA;
 	private float t;
 	private String titulo = "";
@@ -163,8 +157,6 @@ public class Transcion {
 		font.setColor(colorPrevio);
 	}
  
-	public void dispose() {
-		pixel.dispose();
-	}
+	public void dispose() {pixel.dispose();}
 }
  

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class GameHud{
+	
     private final SpriteBatch lote;
     private final BitmapFont fuente;
 
@@ -25,8 +26,5 @@ public class GameHud{
         }
         
     }
-
-    public void dispose() {
-        fuente.dispose();
-    }
+    public void dispose() {fuente.dispose();}
 }

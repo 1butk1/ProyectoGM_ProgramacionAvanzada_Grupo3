@@ -9,31 +9,25 @@ import com.badlogic.gdx.math.Rectangle;
  
 
 public class Boton {
+	
 	private final String texto;
 	private final Rectangle area;
-
-
 	public Boton(String texto, float x, float y, float ancho, float alto) {
 		this.texto = texto;
 		this.area = new Rectangle(x, y, ancho, alto);
 	}
-
- 
-	public boolean contiene(float x, float y) {
-		return area.contains(x, y);
-	}
- 
 	
+	public boolean contiene(float x, float y) {return area.contains(x, y);}
 	public void dibujarFondo(ShapeRenderer shapeRenderer, boolean resaltado) {
 		if (resaltado) {
-			shapeRenderer.setColor(0.62f, 0.66f, 0.58f, 1f);   // borde
+			shapeRenderer.setColor(0.62f, 0.66f, 0.58f, 1f);  
 		} else {
 			shapeRenderer.setColor(0.30f, 0.34f, 0.31f, 1f);
 		}
 		shapeRenderer.rect(area.x - 2, area.y - 2, area.width + 4, area.height + 4);
  
 		if (resaltado) {
-			shapeRenderer.setColor(0.20f, 0.24f, 0.22f, 1f);   // relleno
+			shapeRenderer.setColor(0.20f, 0.24f, 0.22f, 1f);  
 		} else {
 			shapeRenderer.setColor(0.09f, 0.11f, 0.11f, 1f);
 		}
